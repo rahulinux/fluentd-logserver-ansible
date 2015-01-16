@@ -1,0 +1,70 @@
+user {{ nginx_user }};
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+
+    ##
+    # Basic Settings
+    ##
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    server_tokens off;
+    more_clear_headers Server;
+
+    server_names_hash_bucket_size 64;
+    # server_name_in_redirect off;
+    underscores_in_headers on;
+
+    include mime.types;
+    default_type application/octet-stream;
+    
+    ##
+    # Logging Settings
+    ##
+
+    access_log logs/access.log;
+    error_log  logs/error.log;
+
+    ##
+    # Gzip Settings
+    ##
+    ## Compression
+    gzip              on;
+    gzip_comp_level   6;
+    gzip_http_version 1.0;
+    gzip_proxied      any;
+    gzip_types        text/plain application/javascript text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript image/gif image/jpeg image/png image/bmp; 
+    gzip_vary         on;
+
+    server {
+	location /nginx_status {
+		#stub_status on;
+		access_log   off;
+		allow 127.0.0.1;
+		deny all;
+	   }
+
+        listen *:80;
+        server_name _; #default
+        access_log  logs/ip.access.log;
+        error_page   500 502 503 504  /50x.html;
+        
+	location = /50x.html {
+
+            root   html;
+
+        }
+
+    }
+
+    include vhost*.conf;
+}

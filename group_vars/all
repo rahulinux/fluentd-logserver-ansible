@@ -1,0 +1,40 @@
+---
+is_ubuntu: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian' 
+is_centos: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# common
+# OS hardening related variables
+sshd_config: '/etc/ssh/sshd_config'
+
+
+# Nginx 
+nginx_version: '1.6.1'
+nginx_domain: logserver.local
+# it will download nginx and module in following dir
+nginx_work_dir: '/usr/local/src/nginx/'
+nginx_download_link: "http://nginx.org/download/nginx-{{ nginx_version }}.tar.gz"
+nginx_home: '/usr/local/nginx/'
+nginx_user: 'nginx'
+# specify list of module which you want to add 
+# module should be in tar.gz file format
+nginx_modules:
+         - https://github.com/agentzh/headers-more-nginx-module/archive/v0.25.tar.gz
+
+nginx_configure: >
+           ./configure --prefix={{ nginx_home }} --user="{{ nginx_user }}"
+           --group="{{ nginx_user }}" --with-http_ssl_module 
+         
+
+
+## NodeJS
+node_version: '0.10.26'
+node_download_link: 'http://nodejs.org/dist/v{{ node_version}}/node-v{{node_version}}.tar.gz' 
+
+# kibana init proxy
+kibana_repo: 'https://github.com/fangli/kibana-authentication-proxy'
+kibana_home: '/opt/kibana-init-proxy' 
+
+# elasticsearch
+elasticsearch_version: '1.2.2'
+els_download_link: 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-{{ elasticsearch_version }}.deb'
+

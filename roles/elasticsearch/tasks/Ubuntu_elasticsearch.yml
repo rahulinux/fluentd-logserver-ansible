@@ -1,0 +1,22 @@
+---
+  - name: Installing Java for elasticsearch
+    action:
+       apt
+       update_cache=yes
+       cache_valid_time=86400
+       state=installed 
+       pkg=openjdk-7-jre-headless
+
+  - name: Downloading elasticsearch
+    get_url: url={{ els_download_link }} dest=/tmp/elasticsearch.deb
+
+  - name: Installing elasticsearch
+    apt: deb=/tmp/elasticsearch.deb state=installed
+
+  - name: Adding into startup
+    command: update-rc.d elasticsearch defaults
+
+  - name: configuring elasticsearch
+    lineinfile: 
+         dest=/etc/elasticsearch/elasticsearch.yml
+         line="script.disable_dynamic: true"

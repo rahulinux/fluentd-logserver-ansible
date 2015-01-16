@@ -1,0 +1,22 @@
+#!upstart
+
+description "Kibana Proxy for Logserver"
+
+start on started mountall
+stop on shutdown
+
+# This line is needed so that Upstart reports the pid of the Node.js process
+# started by Forever rather than Forever's pid.
+expect fork
+
+env APP_ROOT={{ kibana_home }}/app.js
+env LOG=/var/log/node.log
+env PID_FILE=/var/run/node.pid
+
+script 
+     exec  forever --pidFile $PID_FILE -a -l $LOG start $APP_ROOT
+end script 
+
+pre-stop script
+     exec  forever stop  $APP_ROOT
+end script

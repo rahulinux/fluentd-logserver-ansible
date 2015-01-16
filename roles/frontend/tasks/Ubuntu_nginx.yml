@@ -1,0 +1,49 @@
+---
+  - name: Creating user for nginx service"
+    user: name={{ nginx_user }} system=yes shell=/usr/sbin/nologin
+
+  - name: creating nginx stuff dir
+    file: path={{ nginx_work_dir }} state=directory 
+    file: path={{ nginx_work_dir }}/modules/extracted state=directory 
+
+  - name: Downloading Nginx 
+    get_url: url={{ nginx_download_link }} dest={{ nginx_work_dir }}/nginx-{{nginx_version}}.tar.gz
+
+  - name: Downloading Modules
+    get_url: url={{ item }} dest={{ nginx_work_dir }}/modules/
+    with_items: nginx_modules
+   
+  - name: Extracting Nginx tarball
+    unarchive: src={{nginx_work_dir}}/nginx-{{nginx_version}}.tar.gz dest={{ nginx_work_dir }}
+  
+  - name: Registering modules
+    shell: find {{ nginx_work_dir }}/modules/ -iname '*.tar.gz' 
+    register: modules
+
+  - name: Extracting Nginx modules
+    unarchive: src={{ item }} dest={{ nginx_work_dir }}/modules/extracted/
+    with_items: modules.stdout_lines
+
+  - name: Registering extracted modules
+    shell: find {{ nginx_work_dir }}/modules/extracted/ -maxdepth 1 -type d -print | sed '1d'
+    register: extracted_modules
+  
+  - copy: "dest=/tmp/nginx_compile content='{{ nginx_configure }}'"
+ 
+  - lineinfile: "dest=/tmp/nginx_compile line='--add-module={{ item }}' insertafter=EOF state=present"
+    with_items: extracted_modules.stdout_lines
+
+  - shell: cat nginx_compile | tr "\n" " " chdir=/tmp/
+    register: compile_command
+
+  - name: compling nginx
+    shell: chdir={{ nginx_work_dir }}/nginx-{{nginx_version }} {{compile_command.stdout}} && make && make install 
+
+  - name: configuring nginx.conf
+    template: src=nginx.conf.jinja dest={{ nginx_home }}/conf/nginx.conf
+
+  - name: configuring vhosts
+    template: src=vhosts.conf.jinja dest={{ nginx_home }}/conf/vhosts-{{ nginx_domain }}.conf
+  
+  - name: configuring nginx init script
+    template: src=nginx-init-{{ansible_distribution}}.jinja dest=/etc/init.d/nginx mode=0755

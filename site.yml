@@ -1,0 +1,7 @@
+---
+  - hosts: logserver
+    sudo: true
+    roles:
+      # - common
+      # - frontend
+       - elasticsearch

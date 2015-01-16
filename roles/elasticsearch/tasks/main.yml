@@ -1,0 +1,3 @@
+---
+  - include: Ubuntu_elasticsearch.yml
+    when: "{{ is_ubuntu }}"

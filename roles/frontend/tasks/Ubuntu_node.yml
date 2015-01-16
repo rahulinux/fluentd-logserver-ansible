@@ -1,0 +1,22 @@
+---
+
+#  - name: Downloading NodeJS
+#    get_url: url={{ node_download_link }} dest=/tmp/nodejs.tar.gz
+#
+#  - name: Extracting NodeJS
+#    unarchive: src=/tmp/nodejs.tar.gz dest=/tmp/
+
+#  - name: Compiling NodeJS
+#    shell: ./configure && make && make install chdir=/tmp/node-v{{ node_version }}
+
+   - name: create kibana dir
+     file: dest={{ kibana_home }} state=directory
+
+   - name: Downloading kibana init proxy
+     git: repo={{ kibana_repo }} dest={{ kibana_home }} 
+
+   - name: Installing forever
+     shell: npm install -g forever
+
+   - name: setting-up kibana init script
+     template: src=kibana-init.jinja dest=/etc/init/kibana.conf
