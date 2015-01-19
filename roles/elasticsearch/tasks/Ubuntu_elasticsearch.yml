@@ -19,4 +19,5 @@
   - name: configuring elasticsearch
     lineinfile: 
          dest=/etc/elasticsearch/elasticsearch.yml
-         line="script.disable_dynamic: true"
+         line="script.disable_dynamic':' true"
+         state=present
