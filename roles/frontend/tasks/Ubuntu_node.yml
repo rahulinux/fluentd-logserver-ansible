@@ -1,14 +1,14 @@
 ---
 
-#  - name: Downloading NodeJS
-#    get_url: url={{ node_download_link }} dest=/tmp/nodejs.tar.gz
-#
-#  - name: Extracting NodeJS
-#    unarchive: src=/tmp/nodejs.tar.gz dest=/tmp/
-
-#  - name: Compiling NodeJS
-#    shell: ./configure && make && make install chdir=/tmp/node-v{{ node_version }}
-
+   - name: Downloading NodeJS
+     get_url: url={{ node_download_link }} dest=/tmp/nodejs.tar.gz
+ 
+   - name: Extracting NodeJS
+     unarchive: src=/tmp/nodejs.tar.gz dest=/tmp/
+ 
+   - name: Compiling NodeJS
+     shell: ./configure && make && make install chdir=/tmp/node-v{{ node_version }}
+ 
    - name: create kibana dir
      file: dest={{ kibana_home }} state=directory
 
